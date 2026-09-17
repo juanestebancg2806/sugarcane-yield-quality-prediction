@@ -1,0 +1,35 @@
+# Datasets (keep mill records off GitHub)
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+*.tsv
+*.parquet
+*.sas7bdat
+*.pkl
+*.joblib
+
+# Explicit mill files (in case they are renamed without an extension)
+HISTORICO_SUERTES.xlsx
+BD_IPSA_1940.xlsx
+
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+uv.lock
+
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
