@@ -10,6 +10,11 @@ Supervised learning on harvest records from **Ingenio Providencia** (Valle del C
 
 The unit of analysis in the harvest history is one lot harvested in a given month: `(Hacienda, Suerte, Periodo)`.
 
+Open the notebooks in Google Colab (upload the Excel files in the Colab session; they are not on GitHub):
+
+- Harvest history (regression): [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/modelo_suertes.ipynb)
+- IPSA CC01-1940 (classification): [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/modelo_ipsa.ipynb)
+
 ## Repository layout
 
 ```
