@@ -1,30 +1,37 @@
 # Sugarcane yield and quality prediction
 
-Supervised learning on harvest records from **Ingenio Providencia** (Valle del Cauca, Colombia). The project models two mill outcomes on each harvested lot (*suerte*) and explores a variety-specific classification table.
+Supervised learning on harvest records from **Ingenio Providencia** (Valle del Cauca, Colombia). The project has two separate studies: regression on the mill harvest history, and classification on the IPSA table for variety CC01-1940.
 
-| Outcome | Meaning | Notebook |
+| Outcome | Meaning | Notebooks |
 |---|---|---|
-| **TCH** | Tonnes of cane per hectare (productivity) | `modelo_suertes.ipynb` |
-| **%Sac.Caña** | Sucrose content of the cane (quality) | `modelo_suertes.ipynb` |
-| **IPSA / CC01-1940** | Variety-level table for classification | `modelo_ipsa.ipynb` |
+| **TCH** | Tonnes of cane per hectare (productivity) | `01_eda_suertes.ipynb`, `02_modelos_regresion.ipynb` |
+| **%Sac.Caña** | Sucrose content of the cane (quality) | `01_eda_suertes.ipynb`, `02_modelos_regresion.ipynb` |
+| **IPSA / CC01-1940** | Variety-level table for classification | `01_eda_ipsa.ipynb`, `02_modelos_clasificacion.ipynb` |
 
 The unit of analysis in the harvest history is one lot harvested in a given month: `(Hacienda, Suerte, Periodo)`.
 
 Open the notebooks in Google Colab (upload the Excel files in the Colab session; they are not on GitHub):
 
-- Harvest history (regression): [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/modelo_suertes.ipynb)
-- IPSA CC01-1940 (classification): [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/modelo_ipsa.ipynb)
+- Harvest history — EDA: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/01_eda_suertes.ipynb)
+- Harvest history — regression: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/02_modelos_regresion.ipynb)
+- IPSA CC01-1940 — EDA: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/01_eda_ipsa.ipynb)
+- IPSA CC01-1940 — classification: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/juanestebancg2806/sugarcane-yield-quality-prediction/blob/main/02_modelos_clasificacion.ipynb)
 
 ## Repository layout
 
 ```
 .
 ├── README.md
-├── modelo_suertes.ipynb   # EDA, predictor selection, regression
-├── modelo_ipsa.ipynb      # IPSA variety table (classification)
-├── HISTORICO_SUERTES.xlsx # local only — not in git
-└── BD_IPSA_1940.xlsx      # local only — not in git
+├── 01_eda_suertes.ipynb              # harvest history: inventory, EDA, predictors (steps 1–14)
+├── 02_modelos_regresion.ipynb        # harvest history: hold-out, OLS, CV, RF (steps 15–23)
+├── 01_eda_ipsa.ipynb                 # IPSA CC01-1940: inventory and EDA
+├── 02_modelos_clasificacion.ipynb    # IPSA CC01-1940: classification models
+├── modelo_suertes_deprecated.ipynb   # previous single-notebook harvest analysis (not updated)
+├── HISTORICO_SUERTES.xlsx            # local only — not in git
+└── BD_IPSA_1940.xlsx                 # local only — not in git
 ```
+
+`01_eda_suertes.ipynb` writes `datos/suertes_limpio.parquet` (also gitignored). `02_modelos_regresion.ipynb` reads that file.
 
 ## Data (not in this repository)
 
@@ -32,22 +39,25 @@ Mill spreadsheets are **gitignored**. Clone the repo, then place the Excel files
 
 | File | Used by | Role |
 |---|---|---|
-| `HISTORICO_SUERTES.xlsx` | `modelo_suertes.ipynb` | ~21k harvests × 85 columns (2017–2024) |
-| `BD_IPSA_1940.xlsx` | `modelo_ipsa.ipynb` | IPSA records for variety CC01-1940 |
+| `HISTORICO_SUERTES.xlsx` | `01_eda_suertes.ipynb` | ~21k harvests × 85 columns (2017–2024) |
+| `BD_IPSA_1940.xlsx` | `01_eda_ipsa.ipynb` | IPSA records for variety CC01-1940 |
 
 Notebooks load them with `pd.read_excel(...)` from the working directory.
 
-## `modelo_suertes.ipynb`
+## Harvest history (`01_eda_suertes` + `02_modelos_regresion`)
 
-EDA and regression on the harvest history.
+EDA and regression on `HISTORICO_SUERTES.xlsx`.
 
-1. **Inventory and quality.** Completeness, identifiers vs agronomic measures, label cleanup.
-2. **Predictor set.** Age of the current cycle, cut number, variety/soil/zone (rare levels grouped), distance to the mill, ripener dose, cycle and ripening rainfall, irrigation, harvest/burn type, crop system, tenure, seed destination, and year/month. Leakage from the same harvest (TCHM, TAH, lab sucrose, tonnes) is excluded. Undocumented dictionary fields are reconstructed from the data before they are dropped.
-3. **Models.** Hold-out 80/20 *before* imputation. Train-only medians/modes and dummies. OLS (`statsmodels`) is the interpretable benchmark (signs, p-values). Ridge and Lasso are regularization checks; Random Forest is a non-linear performance comparison, not a substitute for OLS.
+1. **Inventory and quality (`01`).** Completeness, identifiers vs agronomic measures, label cleanup.
+2. **Predictor set (`01`).** Age of the current cycle, cut number, variety/soil/zone (rare levels grouped), distance to the mill, ripener dose, cycle and ripening rainfall, irrigation, harvest/burn type, crop system, tenure, seed destination, and year/month. Leakage from the same harvest (TCHM, TAH, lab sucrose, tonnes) is excluded. Undocumented dictionary fields are reconstructed from the data before they are dropped.
+3. **Models (`02`).** Hold-out 80/20 *before* imputation. Train-only medians/modes and dummies. OLS (`statsmodels`) is the interpretable benchmark (signs, p-values). Ridge and Lasso are regularization checks; Random Forest is a non-linear performance comparison, not a substitute for OLS.
 
-## `modelo_ipsa.ipynb`
+## IPSA CC01-1940 (`01_eda_ipsa` + `02_modelos_clasificacion`)
 
-Classification workflow on `BD_IPSA_1940.xlsx` (variety CC01-1940). Still in progress relative to the harvest-history notebook.
+Classification workflow on `BD_IPSA_1940.xlsx` (variety CC01-1940), separate from the harvest-history study.
+
+1. **Inventory and EDA (`01`).** Load `BD_IPSA_1940.xlsx` (sheet `BD_IPSA`), drop the leftover Excel index, and inspect shape, types and summaries.
+2. **Models (`02`).** Hold-out, multinomial logistic regression and KNN.
 
 ## Setup
 
@@ -56,11 +66,11 @@ Python **3.13+**. From this directory:
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install jupyter pandas numpy matplotlib seaborn scipy statsmodels scikit-learn openpyxl
+pip install jupyter pandas numpy matplotlib seaborn scipy statsmodels scikit-learn openpyxl pyarrow
 jupyter notebook
 ```
 
-Then open `modelo_suertes.ipynb` or `modelo_ipsa.ipynb` and run all cells.
+Then open the `01` notebook of the study you want and run all cells. For the harvest history, run `01_eda_suertes.ipynb` before `02_modelos_regresion.ipynb`. For IPSA, run `01_eda_ipsa.ipynb` before `02_modelos_clasificacion.ipynb`.
 
 ## Design notes
 
