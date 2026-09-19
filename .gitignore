@@ -5,6 +5,7 @@
 *.csv
 *.tsv
 *.parquet
+datos/
 *.sas7bdat
 *.pkl
 *.joblib
@@ -33,3 +34,6 @@ uv.lock
 .idea/
 .vscode/
 *.swp
+
+# Data
+datos/
