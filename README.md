@@ -30,6 +30,8 @@ The Excel files are not on GitHub. In each Colab session, upload the Excel file 
 ├── 02_modelos_regresion.ipynb        # harvest history: hold-out, OLS, CV, Ridge/Lasso, RF, robustness (steps 15–24)
 ├── 01_eda_ipsa.ipynb                 # IPSA CC01-1940: inventory, data quality, EDA, class definitions (sections 0–9)
 ├── 02_modelos_clasificacion.ipynb    # IPSA CC01-1940: partition, logistic regression, KNN, thresholds (sections 10–18)
+├── Informe_Final_Industria_Azucarera.pdf   # final report
+├── Tarea1_Contexto_del_negocio_APA.pdf     # task 1: business context
 ├── HISTORICO_SUERTES.xlsx            # local only — not in git
 ├── BD_IPSA_1940.xlsx                 # local only — not in git
 └── datos/                            # local only — not in git
@@ -63,7 +65,15 @@ The assignment does not allow sharing the data, so the mill spreadsheets and the
 
 ## Setup
 
-Python **3.13+**. From this directory:
+Python **3.13+**. With [uv](https://docs.astral.sh/uv/), from this directory:
+
+```bash
+uv venv
+uv pip install jupyter pandas numpy matplotlib seaborn scipy statsmodels scikit-learn openpyxl pyarrow
+uv run jupyter notebook
+```
+
+Or with the standard library `venv` and pip:
 
 ```bash
 python -m venv .venv
@@ -74,7 +84,7 @@ jupyter notebook
 
 For each study, run the `01` notebook before the `02` notebook: `01_eda_suertes.ipynb` → `02_modelos_regresion.ipynb`, and `01_eda_ipsa.ipynb` → `02_modelos_clasificacion.ipynb`.
 
-The reported results were obtained with pandas <versión>, scikit-learn <versión>, statsmodels <versión> and matplotlib <versión>. Other versions can change the third decimal of some cross-validation metrics.
+The reported results were obtained with Python 3.13.9, pandas 3.0.5, scikit-learn 1.9.1, statsmodels 0.15.0 and matplotlib 3.11.2. Other versions can change the third decimal of some cross-validation metrics.
 
 ## Design notes
 
